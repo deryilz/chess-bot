@@ -1,52 +1,72 @@
+using System.Runtime.CompilerServices;
+
 namespace ChessBot;
 
 class Board
 {
-    public Int64 white_pawns;
-    public Int64 white_rooks;
-    public Int64 white_knights;
-    public Int64 white_bishops;
-    public Int64 white_king;
-    public Int64 white_queen;
+    public Piece[,] GameBoard;
+    public char[] PieceChars = { '-', 'P', 'R', 'N', 'B', 'Q', 'K', 'p', 'r', 'n', 'b', 'q', 'k' };
 
-    public Int64 black_pawns;
-    public Int64 black_rooks;
-    public Int64 black_knights;
-    public Int64 black_bishops;
-    public Int64 black_king;
-    public Int64 black_queen;
+    public Board(string fen)
+    {
+        GameBoard = FromFen(fen);
+    }
 
     public void PrintBoard()
     {
-        char[] chars = new string('-', 64).ToCharArray();
-        void SetChar(char c, Int64 bits) {
-            for (var i = 0; i < 64; i++)
-            {
-                if ((bits & 1) == 1) {
-                    if (chars[63-i] != '-') {
-                        throw new Exception("Um, multiple pieces in the same place.");
-                    }
-                    chars[63 - i] = c;
-                }
-                bits >>= 1;
-            }
-        }
-        SetChar('P', this.white_pawns);
-        SetChar('R', this.white_rooks);
-        SetChar('N', this.white_knights);
-        SetChar('B', this.white_bishops);
-        SetChar('K', this.white_king);
-        SetChar('Q', this.white_queen);
-        SetChar('p', this.black_pawns);
-        SetChar('r', this.black_rooks);
-        SetChar('n', this.black_knights);
-        SetChar('b', this.black_bishops);
-        SetChar('k', this.black_king);
-        SetChar('q', this.black_queen);
-        for (int i = 0; i < 64;i++)
+        for (int row = 0; row < 8; row++)
         {
-            var c = ((i + 1) % 8 == 0) ? "\n" : " ";
-            Console.Write(chars[i] + c);
+            for (int col = 0; col < 8; col++)
+            {
+                Console.Write(PieceChars[(int)GameBoard[row, col]] + " pp");
+            }
+            Console.Write("\n");
         }
     }
+
+    public Piece[,] FromFen(string fen)
+    {
+        Piece[,] board = new Piece[8, 8];
+        int index = 0;
+
+        foreach (var c in fen)
+        {
+            if (PieceChars.Contains(c))
+            {
+                board[index/8, index%8] = (Piece)Array.IndexOf(PieceChars, c);
+            }
+
+            else if (char.IsDigit(c))
+            {
+                index += int.Parse(c.ToString())-1;
+            }
+
+            else
+            {
+                continue;
+            }
+            index++;
+        }
+        
+        return board;
+    }
+}
+
+public enum Piece : byte
+{
+    None = 0,
+    
+    WhitePawn = 1,
+    WhiteRook = 2,
+    WhiteKnight = 3,
+    WhiteBishop = 4,
+    WhiteQueen = 5,
+    WhiteKing = 6,
+    
+    BlackPawn = 7,
+    BlackRook = 8,
+    BlackKnight = 9,
+    BlackBishop = 10,
+    BlackQueen = 11,
+    BlackKing = 12,
 }
