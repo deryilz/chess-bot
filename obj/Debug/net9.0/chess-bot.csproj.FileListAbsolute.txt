@@ -1,0 +1,14 @@
+/home/derin/code/chess-bot/bin/Debug/net9.0/chess-bot
+/home/derin/code/chess-bot/bin/Debug/net9.0/chess-bot.deps.json
+/home/derin/code/chess-bot/bin/Debug/net9.0/chess-bot.runtimeconfig.json
+/home/derin/code/chess-bot/bin/Debug/net9.0/chess-bot.dll
+/home/derin/code/chess-bot/bin/Debug/net9.0/chess-bot.pdb
+/home/derin/code/chess-bot/obj/Debug/net9.0/chess-bot.GeneratedMSBuildEditorConfig.editorconfig
+/home/derin/code/chess-bot/obj/Debug/net9.0/chess-bot.AssemblyInfoInputs.cache
+/home/derin/code/chess-bot/obj/Debug/net9.0/chess-bot.AssemblyInfo.cs
+/home/derin/code/chess-bot/obj/Debug/net9.0/chess-bot.csproj.CoreCompileInputs.cache
+/home/derin/code/chess-bot/obj/Debug/net9.0/chess-bot.dll
+/home/derin/code/chess-bot/obj/Debug/net9.0/refint/chess-bot.dll
+/home/derin/code/chess-bot/obj/Debug/net9.0/chess-bot.pdb
+/home/derin/code/chess-bot/obj/Debug/net9.0/chess-bot.genruntimeconfig.cache
+/home/derin/code/chess-bot/obj/Debug/net9.0/ref/chess-bot.dll
