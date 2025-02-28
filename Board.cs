@@ -4,31 +4,51 @@ class Board
 {
     public static char[] PieceChars = { '-', 'P', 'R', 'N', 'B', 'Q', 'K', 'p', 'r', 'n', 'b', 'q', 'k' };
 
-    public Piece[,] GameBoard;
+    public Piece[] GameBoard;
     // bits in order:
     // ?, ?, ?, is white move, K castle, Q castle, k castle, q castle
-    public byte TurnAndCastlingInfo = 0;
+    // public byte TurnAndCastlingInfo = 0;
+    
+    public bool IsWhiteTurn;
     public int EnPassantSquare;
     public int MovesSinceCapture;
     public int MoveCount;
 
-    public Board(Board other)
+    public CastlingRights CastlingRights = new CastlingRights();
+
+    public bool CanWhiteCastleQ {
+        get { return CastlingRights.CanWhiteCastleQ; }
+        set { CastlingRights.CanWhiteCastleQ = value; }
+    }
+
+    public bool CanWhiteCastleK {
+        get { return CastlingRights.CanWhiteCastleK; }
+        set { CastlingRights.CanWhiteCastleK = value; }
+    }
+
+    public bool CanBlackCastleQ {
+        get { return CastlingRights.CanBlackCastleQ; }
+        set { CastlingRights.CanBlackCastleQ = value; }
+    }
+
+    public bool CanBlackCastleK {
+        get { return CastlingRights.CanBlackCastleK; }
+        set { CastlingRights.CanBlackCastleK = value; }
+    }
+
+    Board(Board other)
     {
-        GameBoard = new Piece[8, 8];
+        GameBoard = new Piece[8 * 8];
         Array.Copy(other.GameBoard, GameBoard, 64);
-        TurnAndCastlingInfo = other.TurnAndCastlingInfo;
+        CastlingRights = other.CastlingRights;
+        IsWhiteTurn = other.IsWhiteTurn;
         EnPassantSquare = other.EnPassantSquare;
         MovesSinceCapture = other.MovesSinceCapture;
         MoveCount = other.MoveCount;
     }
 
-    public bool CanWhiteCastleQ {
-        get { return (TurnAndCastlingInfo & 4) != 0; }
-        set { if (value) { TurnAndCastlingInfo |= 4; } else { TurnAndCastlingInfo &= 255 - 4; } }
-    }
-
-    Board(string inputFen) {
-        Piece[,] pieces = new Piece[8, 8];
+    public Board(string inputFen) {
+        Piece[] pieces = new Piece[8 * 8];
         int index = 0;
 
         string[] fen = inputFen.Split(" ");
@@ -37,7 +57,7 @@ class Board
         {
             if (PieceChars.Contains(c))
             {
-                pieces[index / 8, index % 8] = (Piece)Array.IndexOf(PieceChars, c);
+                pieces[index] = (Piece)Array.IndexOf(PieceChars, c);
             }
 
             else if (char.IsDigit(c))
@@ -53,38 +73,14 @@ class Board
         }
 
         GameBoard = pieces;
-
-        SetCastlingRights(fen[3].Contains('K'), fen[3].Contains('Q'), fen[3].Contains('k'), fen[3].Contains('q'));
+        IsWhiteTurn = fen[1] == "w";
+        CanWhiteCastleK = fen[2].Contains("K");
+        CanWhiteCastleQ = fen[2].Contains("Q");
+        CanBlackCastleK = fen[2].Contains("k");
+        CanBlackCastleQ = fen[2].Contains("q");
+        EnPassantSquare = SquareFromAlgNotation(fen[3]);
         MovesSinceCapture = int.Parse(fen[4]);
         MoveCount = int.Parse(fen[5]);
-    }
-
-    public bool IsWhiteTurn() {
-        return (TurnAndCastlingInfo & 16) != 0;
-    }
-
-    public bool CanWhiteCastleK() {
-        return (TurnAndCastlingInfo & 8) != 0;
-    }
-
-    public bool CanWhiteCastleQ() {
-        return (TurnAndCastlingInfo & 4) != 0;
-    }
-
-    public bool CanBlackCastleK() {
-        return (TurnAndCastlingInfo & 2) != 0;
-    }
-
-    public bool CanBlackCastleQ() {
-        return (TurnAndCastlingInfo & 1) != 0;
-    }
-
-    public bool SetCastlingRights(bool K, bool Q, bool k, bool q) {
-        int val = 0;
-        if (K) {
-
-        }
-        return TurnAndCastlingInfo >> 5 != 0;
     }
 
     public void PrintBoard()
@@ -93,10 +89,37 @@ class Board
         {
             for (int col = 0; col < 8; col++)
             {
-                Console.Write(PieceChars[(int)GameBoard[row, col]] + " pp");
+                Console.Write(PieceChars[(int)GameBoard[row * 8 + col]] + " ");
             }
             Console.Write("\n");
         }
+
+        Console.WriteLine();
+        Console.WriteLine("White to move: " + IsWhiteTurn);
+        Console.WriteLine("En passant square: " + EnPassantSquare);
+        Console.WriteLine("Moves since capture: " + MovesSinceCapture);
+        Console.WriteLine("Move count: " + MoveCount);
+        Console.WriteLine("White can castle kingside: " + CanWhiteCastleK);
+        Console.WriteLine("White can castle queenside: " + CanWhiteCastleQ);
+        Console.WriteLine("Black can castle kingside: " + CanBlackCastleK);
+        Console.WriteLine("Black can castle queenside: " + CanBlackCastleQ);
+        
+    }
+
+    public int SquareFromAlgNotation(string square)
+    {
+        if (square == "-")
+        {
+            return -1;
+        }
+        int index = char.ToUpper(square[0]) - 64;
+        index += (int)(char.GetNumericValue(square[1]) - 1) * 8;
+        return index;
+    }
+    public Board CloneBoard()
+    {
+        Board newBoard = new Board(this);
+        return newBoard;
     }
 }
 
@@ -117,4 +140,18 @@ public enum Piece : byte
     BlackBishop = 10,
     BlackQueen = 11,
     BlackKing = 12,
+}
+
+public struct Move
+{
+    public int StartSquare;
+    public int EndSquare;
+}
+
+public struct CastlingRights
+{
+    public bool CanBlackCastleQ;
+    public bool CanBlackCastleK;
+    public bool CanWhiteCastleQ;
+    public bool CanWhiteCastleK;
 }
