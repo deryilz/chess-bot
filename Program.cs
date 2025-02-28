@@ -1,7 +1,8 @@
 using ChessBot;
+// See https://aka.ms/new-console-template for more information
 
-var board = new Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 0");
+// Create a new board instance
+var board = new Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+
+// Print the board to the console
 board.PrintBoard();
-
-var board1 = new Board("rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq c6 0 2");
-board1.PrintBoard();

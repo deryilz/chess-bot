@@ -8,33 +8,13 @@ class Board
     // bits in order:
     // ?, ?, ?, is white move, K castle, Q castle, k castle, q castle
     // public byte TurnAndCastlingInfo = 0;
-    
+
     public bool IsWhiteTurn;
     public int EnPassantSquare;
     public int MovesSinceCapture;
     public int MoveCount;
 
     public CastlingRights CastlingRights = new CastlingRights();
-
-    public bool CanWhiteCastleQ {
-        get { return CastlingRights.CanWhiteCastleQ; }
-        set { CastlingRights.CanWhiteCastleQ = value; }
-    }
-
-    public bool CanWhiteCastleK {
-        get { return CastlingRights.CanWhiteCastleK; }
-        set { CastlingRights.CanWhiteCastleK = value; }
-    }
-
-    public bool CanBlackCastleQ {
-        get { return CastlingRights.CanBlackCastleQ; }
-        set { CastlingRights.CanBlackCastleQ = value; }
-    }
-
-    public bool CanBlackCastleK {
-        get { return CastlingRights.CanBlackCastleK; }
-        set { CastlingRights.CanBlackCastleK = value; }
-    }
 
     Board(Board other)
     {
@@ -74,13 +54,17 @@ class Board
 
         GameBoard = pieces;
         IsWhiteTurn = fen[1] == "w";
-        CanWhiteCastleK = fen[2].Contains("K");
-        CanWhiteCastleQ = fen[2].Contains("Q");
-        CanBlackCastleK = fen[2].Contains("k");
-        CanBlackCastleQ = fen[2].Contains("q");
+        CastlingRights.CanWhiteCastleK = fen[2].Contains("K");
+        CastlingRights.CanWhiteCastleQ = fen[2].Contains("Q");
+        CastlingRights.CanBlackCastleK = fen[2].Contains("k");
+        CastlingRights.CanBlackCastleQ = fen[2].Contains("q");
         EnPassantSquare = SquareFromAlgNotation(fen[3]);
         MovesSinceCapture = int.Parse(fen[4]);
         MoveCount = int.Parse(fen[5]);
+    }
+
+    public Piece PieceAt(int row, int col) {
+        return GameBoard[row * 8 + col];
     }
 
     public void PrintBoard()
@@ -99,11 +83,11 @@ class Board
         Console.WriteLine("En passant square: " + EnPassantSquare);
         Console.WriteLine("Moves since capture: " + MovesSinceCapture);
         Console.WriteLine("Move count: " + MoveCount);
-        Console.WriteLine("White can castle kingside: " + CanWhiteCastleK);
-        Console.WriteLine("White can castle queenside: " + CanWhiteCastleQ);
-        Console.WriteLine("Black can castle kingside: " + CanBlackCastleK);
-        Console.WriteLine("Black can castle queenside: " + CanBlackCastleQ);
-        
+        Console.WriteLine("White can castle kingside: " + CastlingRights.CanWhiteCastleK);
+        Console.WriteLine("White can castle queenside: " + CastlingRights.CanWhiteCastleQ);
+        Console.WriteLine("Black can castle kingside: " + CastlingRights.CanBlackCastleK);
+        Console.WriteLine("Black can castle queenside: " + CastlingRights.CanBlackCastleQ);
+
     }
 
     public int SquareFromAlgNotation(string square)
@@ -116,6 +100,7 @@ class Board
         index += (int)(char.GetNumericValue(square[1]) - 1) * 8;
         return index;
     }
+
     public Board CloneBoard()
     {
         Board newBoard = new Board(this);
